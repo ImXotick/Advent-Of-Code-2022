@@ -2,21 +2,26 @@
 input = [line.split(' ') for line in open(r'examples\day10\input.txt').read().splitlines()]
 
 # Funkcija, ki dobi signal
-def get_signal_strength():
-    signalStrength = 0 # Moč singala
-    register = 1 # Trenutni register
-    cycle = 0 # Trenutni cikel
-    prev = 0 # Prejšnji cikel
+def get_signal_and_CRT():
+    signalStrength: int = 0 # Moč singala
+    register: int = 1 # Trenutni register
+    cycle: int = 0 # Trenutni cikel
+    prev: int = 0 # Prejšnji cikel
+    sprite: str = "###....................................." # Trenutni sprite
+    saver: list = [] # CRT shranjevalec
+    CRT: str =  "" # Trenutni CRT
 
     for item in input: 
-        # Preverimo, če je trenutni element(item) na mestu 0 noop
+        # Preverimo, če je trenutni element(item) na mestu 0 noop     
         if(item[0] == "noop"):
             # Preverimo trenutni cikel
             if(cycle == 20 or cycle == prev + 40):
                 signalStrength += register * cycle
                 prev = cycle
-                print(f"| Cycle: {cycle} | Register: {register} | Strength: {signalStrength} |")
+                print(f"| Cycle: {cycle} | Register: {register} | Total Strength: {signalStrength} |")
             cycle += 1
+            # Ob noop-u samo zapišemo CRT brez kreiranja sprita
+            CRT = write_CRT(sprite, CRT, saver)
         else:
             # Izvajanje navodila
             for i in range(2):
@@ -25,11 +30,46 @@ def get_signal_strength():
                 if(cycle == 20 or cycle == prev + 40):
                     signalStrength += register * cycle
                     prev = cycle 
-                    print(f"| Cycle: {cycle} | Register: {register} | Strength: {signalStrength} |")
-                if(i == 1):
+                    print(f"| Cycle: {cycle} | Register: {register} | Total Strength: {signalStrength} |")
+                # Če se izvajanje začne zapišemo CRT s trenutnim spriteom
+                if(i == 0):
+                    CRT = write_CRT(sprite, CRT, saver)
+                # Če se izvajanje, končuje zapišemo CRT s trenutnim spriteom in kreiramo nov sprite    
+                else:
                     register += int(item[1])
-    return signalStrength
+                    CRT = write_CRT(sprite, CRT, saver)
+                    sprite = create_sprint(register)
+
+    return { 'signal': signalStrength, 'CRT': saver}
+
+# Funkcija, ki kreira nov sprite
+def create_sprint(register: int):
+    sprite: str = ""
+
+    for i in range(40):
+        if(i == register - 1 or i == register or i == register + 1):
+            sprite += "#"
+        else:
+            sprite += "."
+
+    return sprite
+
+# Funkcija, ki skrbi za zapisovanje CRT-ja
+def write_CRT(sprite: str, CRT: str, saver: list):
+    crtLength: int = len(CRT)
+
+    if(sprite[crtLength] == "#"):
+        CRT += "#"
+    else:
+        CRT += "."
+    if(len(CRT) >= 40):
+        saver.append(CRT)
+        CRT = ""
+
+    return CRT
 
 #Izpis
-output = get_signal_strength()
-print(output)
+output = get_signal_and_CRT()
+print(f"Total signal strength: {output['signal']}")
+for item in output['CRT']:
+    print(item)

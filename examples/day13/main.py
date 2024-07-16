@@ -55,9 +55,9 @@ for p in packets:
 # Sprehodimo se skozi vsak element v seznamu in preverimo, če funkcija compare_lists vrne True za ta element in seznam [[6]]
 position2 = 2  # Začnemo z 2
 for p in packets:
-    if compare_lists(p, [[6]]):
+    if compare_lists(p, [[6]]): 
         position2 += 1
 
-# Izračunamo produkt position_1 in position2 ter ga izpišemo
+# Izračunamo produkt position1 in position2 ter ga izpišemo
 result = position1 * position2
 print(result)

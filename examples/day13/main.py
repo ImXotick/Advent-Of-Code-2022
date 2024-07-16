@@ -2,7 +2,7 @@ import json
 
 # Funkcija, ki preverja elemente seznama
 def compare_lists(list1, list2):
-    #print(f"List1: {list1} | List2: {list2}")
+    #*print(f"List1: {list1} | List2: {list2}")
 
     # Preverimo, če sta oba elementa tipa int
     if isinstance(list1, int) and isinstance(list2, int):
@@ -31,7 +31,7 @@ pairs = [[json.loads(p) for p in e.splitlines()] for e in open(r'examples\day13\
 
 summed_val = 0
 for i, (left, right) in enumerate(pairs, 1):
-    #Če je levi del manjši od desnega se index para prišteje k spremenljivki sum
+    # Če je levi del manjši od desnega se index para prišteje k spremenljivki sum
     if compare_lists(left, right):
         # Dodamo index v sum
         summed_val += i

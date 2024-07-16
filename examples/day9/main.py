@@ -15,9 +15,9 @@ class Position:
 
 # Funkcija za določitev strani premika
 def get_add_number(prev_num: int, cur_num: int) -> int:
-    if(prev_num > cur_num):
+    if prev_num > cur_num:
         return -1
-    elif(prev_num < cur_num):
+    elif prev_num < cur_num:
         return 1
     else:
         return 0
@@ -47,21 +47,21 @@ def get_unique_tail_positions(tail_length) -> int:
 
             # Premikamo vsak "tail" 
             for i in range(len(positions)):
-                if(i == 0): continue # Če je head začnemo drug krog z i = 1
+                if i == 0: continue # Če je head začnemo drug krog z i = 1
 
                 # Preverimo, če je razlika med pozicijami večja od 1
                 x_diff = abs(positions[i - 1].x - positions[i].x)
                 y_diff = abs(positions[i - 1].y - positions[i].y)
                 
-                if not (x_diff > 1 or y_diff > 1):
+                if not x_diff > 1 or y_diff > 1:
                     continue
 
                 # Preverimo razliko med pozicijami in premikamo "tali-e" glede na razmike
-                if (x_diff > y_diff):
+                if x_diff > y_diff:
                     new_x = get_add_number(positions[i - 1].x, positions[i].x)
                     positions[i].x = positions[i - 1].x + new_x
                     positions[i].y = positions[i - 1].y
-                elif (x_diff < y_diff):
+                elif x_diff < y_diff:
                     new_y = get_add_number(positions[i - 1].y, positions[i].y)
                     positions[i].x = positions[i - 1].x
                     positions[i].y = positions[i - 1].y + new_y
@@ -72,7 +72,7 @@ def get_unique_tail_positions(tail_length) -> int:
                     positions[i].y = positions[i - 1].y + new_y
 
                 # Če se i enak zadnjemu "tail-u" zabeležimo njegovo pozicijo 
-                if (i == len(positions) - 1):
+                if i == len(positions) - 1:
                     visited_cords.add((positions[i].x, positions[i].y))
 
     # Izpišemo število obiskanih kordinat + 1, zaradi začetnega mesta

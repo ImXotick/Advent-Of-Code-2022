@@ -2,7 +2,7 @@ import json
 
 # Funkcija, ki preverja elemente seznama
 def compare_lists(list1, list2):
-    #*print(f"List1: {list1} | List2: {list2}")
+    #* print(f"List1: {list1} | List2: {list2}")
 
     # Preverimo, če sta oba elementa tipa int
     if isinstance(list1, int) and isinstance(list2, int):
@@ -17,7 +17,7 @@ def compare_lists(list1, list2):
         # Iteriramo skozi oba seznama hkrati z uporabo zip
         for e1, e2 in zip(list1, list2):
             # Za vsak par recurzivno pokličemo compare_lists
-            if (comparison := compare_lists(e1, e2)) is not "Same":
+            if comparison := compare_lists(e1, e2) is not "Same":
                 return comparison # Vrnemo, če rezultat ni Same
         return compare_lists(len(list1), len(list2)) # Primerja dolžini seznamov in vrnemo rezultat primerjave dolžin
     # Če je list1 tipa int in list2 tipa list pretvorimo list1 v seznam z enim elementom in ponovno pokličemo compare_lists.

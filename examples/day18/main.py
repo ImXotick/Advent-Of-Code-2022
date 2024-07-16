@@ -19,11 +19,11 @@ def calculate_non_connected_sides_part1()-> int:
         # Za vsako kocko pogledamo 6 možnih sosedov
         for direction in directions:
             neighbor = (cube[0] + direction[0], cube[1] + direction[1], cube[2] + direction[2])
-            #*print(f"Cube: {cube} | neighbor: {neighbor}")
+            #* print(f"Cube: {cube} | neighbor: {neighbor}")
             # za vsakega soseda zmanjšamo število odkritih ploskev za 1
             if neighbor in cubes:
                 sides_exposed -= 1
-                #*print(f"{True} neighbor exists!")
+                #* print(f"{True} neighbor exists!")
         # Za vsako kocko seštevamo skupno število odkritih ploskev
         total_surface_area += sides_exposed
     
@@ -68,7 +68,7 @@ def calculate_non_connected_sides_part2()-> int:
             neighbor = (x + direction[0], y + direction[1], z + direction[2])
             queue.append(neighbor)
     
-    #*print(f"Vse zunanje meje: {outside_bounds}")
+    #* print(f"Vse zunanje meje: {outside_bounds}")
 
     # Premikamo so čez vse kocke
     for cube in cubes:

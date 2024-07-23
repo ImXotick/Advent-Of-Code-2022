@@ -1,6 +1,6 @@
 positions = [list(line) for line in open('examples\day23\input.txt', 'r').read().strip().split('\n')]
 
-order = [('N', 'NE', 'NW', -1, 0), ('S', 'SE', 'SW', +1, 0), ('W', 'NW', 'SW', 0, -1), ('E', 'NE', 'SE', 0, +1)]
+order = ['N', 'S', 'W', 'E']
 
 # Funkcija za izpis trenutnih pozicij
 def current_positions(positions: list):
@@ -11,88 +11,102 @@ def current_positions(positions: list):
     return output
 
 # Funkcija, ki za določeno pozicijo dobi kordinate za možne sosede
-def get_possible_neighbor(x: int, y: int) -> dict:
-    directions: dict = {}
+def get_possible_neighbor(x: int, y: int, limit_x, limit_y) -> dict:
+    directions: list = []
 
-    if positions[y-1][x-1] == "#":
-        directions.update({'NW': True})
-    else:
-        directions.update({'NW': False})
+    for change_y in [-1, 0, 1]:
+        for change_x in [-1, 0, 1]:
+            if x == 0 and y == 0:
+                continue
 
-    
-    if positions[y-1][x] == "#":
-        directions.update({'N': True})
-    else:
-        directions.update({'N': False})
-    
-    if positions[y-1][x+1] == "#":
-        directions.update({'NE': True})
-    else:
-        directions.update({'NE': False})
+            new_x, new_y = x + change_x, y + change_y
 
-    if positions[y][x-1] == "#":
-        directions.update({'W': True})
-    else:
-        directions.update({'W': False})
+            if new_x == x and new_y == y:
+                continue
 
-    if positions[y][x+1] == "#":
-        directions.update({'E': True})
-    else:
-        directions.update({'E': False})
-
-    if positions[y+1][x-1] == "#":
-        directions.update({'SW': True})
-    else:
-        directions.update({'SW': False})
-
-    if positions[y+1][x] == "#":
-        directions.update({'S': True})
-    else:
-        directions.update({'S': False})
-
-    if positions[y+1][x+1] == "#":
-        directions.update({'SE': True})
-    else:
-        directions.update({'SE': False})
+            if 0 <= new_x < limit_x and 0 <= new_y < limit_y:
+                directions.append((new_y, new_x))
 
     return directions
+
+# Funckija, ki preveri, če je premik v določeno smer mogoč
+def check_direction(empty_neighbors: list, y: int, x: int, limit_y: int, limit_x: int, direction: str):
+
+    if direction == 'N':
+        if y <= 0:
+            return False
+        if (y-1, x-1) in empty_neighbors and (y-1, x) in empty_neighbors and (y-1, x+1) in empty_neighbors:
+            return True
+        return False
+    
+    elif direction == 'S': 
+        if y >= limit_y - 1:
+            return False
+        if (y+1, x-1) in empty_neighbors and (y+1, x) in empty_neighbors and (y+1, x+1) in empty_neighbors:
+            return True
+        return False
+    
+    elif direction == 'W': 
+        if x <= 0:
+            return False
+        if (y-1, x-1) in empty_neighbors and (y, x-1) in empty_neighbors and (y+1, x-1) in empty_neighbors:
+            return True
+        return False
+    
+    elif direction == 'E': 
+        if x >= limit_x - 1:
+            return False
+        if (y-1, x+1) in empty_neighbors and (y, x+1) in empty_neighbors and (y+1, x+1) in empty_neighbors:
+            return True
+        return False
 
 # Funkcija za določitev premikov
 def define_moves(positions: list, order: list):
     moves: dict = {}
+    limit_y, limit_x = len(positions), len(positions[0])
 
     for y in range(len(positions)):
         for x in range(len(positions[y])):
             #*print(f"Y: {y} | X: {x} | {input[y][x]}")
             if positions[y][x] == "#":
+            
+                possibilities = get_possible_neighbor(x, y, limit_x, limit_y)
 
-                possibilities = get_possible_neighbor(x, y)
+                # Poiščemo vse kordinate praznih sosedov v možnih sosedih
+                empty_neighbors = []
 
-                if not any(possibilities.values()):
+                for pos in possibilities:
+                    if positions[pos[0]][pos[1]] == ".":
+                        empty_neighbors.append(pos)
+                    
+                # Če je število praznih sosedov enaka vsem možnim sosedom pozicijo preskočimo
+                if len(empty_neighbors) == len(possibilities):
                     continue
 
-                if not possibilities[order[0][0]] and not possibilities[order[0][1]] and not possibilities[order[0][2]]:
-                    moves.update({(y, x): (y + order[0][3], x + order[0][4])})
-                    #*print(f"True: North | {x,y} | {possibilities['NW'], possibilities['N'], possibilities['NE']}")
-                elif not possibilities[order[1][0]] and not possibilities[order[1][1]] and not possibilities[order[1][2]]:
-                    moves.update({(y, x): (y + order[1][3], x + order[1][4])})
-                    #*print(f"True: South | {x,y} | {possibilities['SW'], possibilities['S'], possibilities['SE']}")
-                elif not possibilities[order[2][0]] and not possibilities[order[2][1]] and not possibilities[order[2][2]]: 
-                    moves.update({(y, x): (y + order[2][3], x + order[2][4])})
-                    #*print(f"True: West | {x,y} | {possibilities['NW'], possibilities['W'], possibilities['SW']}")
-                elif not possibilities[order[3][0]] and not possibilities[order[3][1]] and not possibilities[order[3][2]]:
-                    moves.update({(y, x): ((y + order[3][3], x + order[3][4]))})
-                    #*print(f"True: West | {x,y} | {possibilities['NE'], possibilities['E'], possibilities['SE']}")
+                for direction in order:
+                    if direction == 'N' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
+                        moves[(y, x)] = (y-1, x)
+                        break
+                    elif direction == 'S' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
+                        moves[(y, x)] = (y+1, x)
+                        break
+                    elif direction == 'W' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
+                        moves[(y, x)] = (y, x-1)
+                        break
+                    elif direction == 'E' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
+                        moves[(y, x)] = (y, x+1)
+                        break
 
     # Vzamemo prvi vrsti red in ga dodamo kot zadnjega v vrsto
     order.append(order.pop(0))
 
     return moves
 
+""" TODO:
 # Funckija, ki izvede premike
 def commit_moves(positions: list, order: list):
     moves = define_moves(positions, order)
-    
+    #*print(moves)
     for key, value in moves.items():
         if any(value == other_value for other_key, other_value in moves.items() if other_key != key):
             #*print("Skipping!")
@@ -100,6 +114,7 @@ def commit_moves(positions: list, order: list):
 
         positions[key[0]][key[1]] = '.'
         positions[value[0]][value[1]] = "#"
+"""
 
 # Funkcija, ki prešteje prazne pike v pravokotniku
 def calculate_empty_tiles(positions: list):
@@ -126,95 +141,8 @@ def calculate_empty_tiles(positions: list):
     return empty_tiles
 
 # Program
-for i in range(10):
+for i in range(2):
     commit_moves(positions, order)
-    #*print(current_positions(positions))
-print(calculate_empty_tiles(positions))
-
-
-
-
-#TODO: Lažji način? boljši?
-"""
-# Funkcija, ki za določeno pozicijo dobi kordinate za možne sosede
-def get_possible_neighbor(x: int, y: int) -> list:
-    return [(x-1, y+1), (x, y+1), (x+1,y+1), 
-            (x-1,y), (x+1,y), 
-            (x-1,y-1), (x, y-1), (x+1, y-1)]
-"""
-
-
-"""
-        if y != 0:
-        if positions[y-1][x-1] == "#":
-            directions.update({'NW': True})
-        else:
-            directions.update({'NW': False})
-    else:
-        directions.update({'NW': True})
-    
-    if y != 0:
-        if positions[y-1][x] == "#":
-            directions.update({'N': True})
-        else:
-            directions.update({'N': False})
-    else:
-        directions.update({'N': True})
-
-    
-    if y != 0:
-        if positions[y-1][x+1] == "#":
-            directions.update({'NE': True})
-        else:
-            directions.update({'NE': False})
-    else:
-        directions.update({'NE': True})
-
-    if x != 0:
-        if positions[y][x-1] == "#":
-            directions.update({'W': True})
-        else:
-            directions.update({'W': False})
-    else:
-        directions.update({'W': True})
-
-    if y != len(positions[0]):
-        if positions[y][x+1] == "#":
-            directions.update({'E': True})
-        else:
-            directions.update({'E': False})
-    else:
-        directions.update({'E': True})
-
-    if y != len(positions):
-        if positions[y+1][x-1] == "#":
-            directions.update({'SW': True})
-        else:
-            directions.update({'SW': False})
-    else:
-        directions.update({'SW': True})
-
-    if y != len(positions):
-        if positions[y+1][x] == "#":
-            directions.update({'S': True})
-        else:
-            directions.update({'S': False})
-    else:
-        directions.update({'S': True})
-
-    if y != len(positions):
-        if positions[y+1][x+1] == "#":
-            directions.update({'SE': True})
-        else:
-            directions.update({'SE': False})
-    else:
-        directions.update({'SE': True})
-
-
-
-
-
-
-
-
-"""
+    #print(current_positions(positions))
+#print(calculate_empty_tiles(positions))
+#print(current_positions(positions))

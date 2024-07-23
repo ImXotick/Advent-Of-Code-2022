@@ -1,148 +1,139 @@
 positions = [list(line) for line in open('examples\day23\input.txt', 'r').read().strip().split('\n')]
 
+# Smeri
 order = ['N', 'S', 'W', 'E']
 
-# Funkcija za izpis trenutnih pozicij
-def current_positions(positions: list):
-    output = ''
-    for row in positions:
-        output += ''.join(row) + '\n'
+# Funkcija, ki za določeno pozicijo dobi kordinate za prazne sosede
+def get_empty_neighbors(cords: list, y: int, x: int) -> dict:
+    neighbors: list = []
 
-    return output
-
-# Funkcija, ki za določeno pozicijo dobi kordinate za možne sosede
-def get_possible_neighbor(x: int, y: int, limit_x, limit_y) -> dict:
-    directions: list = []
-
+    # Premikamo se skozi y pozicije
     for change_y in [-1, 0, 1]:
+        # Premikamo se skozi x pozicije
         for change_x in [-1, 0, 1]:
-            if x == 0 and y == 0:
-                continue
-
+            # Spreminjamo x in y (+1, -1)
             new_x, new_y = x + change_x, y + change_y
 
+            # Če sta nov x in y enaka trenutnim kordinatom elfa preskočimo
             if new_x == x and new_y == y:
                 continue
+            
+            # V seznam dodamo samo kordinate, ki so prazni
+            if (new_y, new_x) not in cords:
+                neighbors.append((new_y, new_x))
 
-            if 0 <= new_x < limit_x and 0 <= new_y < limit_y:
-                directions.append((new_y, new_x))
-
-    return directions
+    return neighbors
 
 # Funckija, ki preveri, če je premik v določeno smer mogoč
-def check_direction(empty_neighbors: list, y: int, x: int, limit_y: int, limit_x: int, direction: str):
+def check_direction(empty_neighbors: list, y: int, x: int, direction: str) -> bool:
 
+    # V praznih sosedih preverimo, če se glede na trenutno smer lahko elf premakne
     if direction == 'N':
-        if y <= 0:
-            return False
         if (y-1, x-1) in empty_neighbors and (y-1, x) in empty_neighbors and (y-1, x+1) in empty_neighbors:
             return True
-        return False
-    
-    elif direction == 'S': 
-        if y >= limit_y - 1:
+        else:
             return False
+    elif direction == 'S': 
         if (y+1, x-1) in empty_neighbors and (y+1, x) in empty_neighbors and (y+1, x+1) in empty_neighbors:
             return True
-        return False
-    
-    elif direction == 'W': 
-        if x <= 0:
+        else:
             return False
+    elif direction == 'W': 
         if (y-1, x-1) in empty_neighbors and (y, x-1) in empty_neighbors and (y+1, x-1) in empty_neighbors:
             return True
-        return False
-    
-    elif direction == 'E': 
-        if x >= limit_x - 1:
+        else:
             return False
+    elif direction == 'E': 
         if (y-1, x+1) in empty_neighbors and (y, x+1) in empty_neighbors and (y+1, x+1) in empty_neighbors:
             return True
-        return False
+        else:
+            return False
 
 # Funkcija za določitev premikov
-def define_moves(positions: list, order: list):
+def define_moves(cords: list, order: list) -> dict:
     moves: dict = {}
-    limit_y, limit_x = len(positions), len(positions[0])
 
-    for y in range(len(positions)):
-        for x in range(len(positions[y])):
-            #*print(f"Y: {y} | X: {x} | {input[y][x]}")
-            if positions[y][x] == "#":
-            
-                possibilities = get_possible_neighbor(x, y, limit_x, limit_y)
+    for cord in cords:
+        # Kličemo funkcijo, ki vrne kordinate praznih sosedov
+        empty_neighbors = get_empty_neighbors(cords, cord[0], cord[1])
 
-                # Poiščemo vse kordinate praznih sosedov v možnih sosedih
-                empty_neighbors = []
+        # Če je število praznih sosedov enako 8 preskočimo, saj se elf ne premakne
+        if len(empty_neighbors) == 8:
+            continue   
+        
+        # Za vsako trenutno smer premika pregledamo, če je premik mogoč
+        for direction in order:
+            if direction == 'N' and check_direction(empty_neighbors, cord[0], cord[1], direction):
+                moves[(cord[0], cord[1])] = (cord[0]-1, cord[1])
+                break
+            elif direction == 'S' and check_direction(empty_neighbors, cord[0], cord[1], direction):
+                moves[(cord[0], cord[1])] = (cord[0]+1, cord[1])
+                break
+            elif direction == 'W' and check_direction(empty_neighbors, cord[0], cord[1], direction):
+                moves[(cord[0], cord[1])] = (cord[0], cord[1]-1)
+                break
+            elif direction == 'E' and check_direction(empty_neighbors, cord[0], cord[1], direction):
+                moves[(cord[0], cord[1])] = (cord[0], cord[1]+1)
+                break    
 
-                for pos in possibilities:
-                    if positions[pos[0]][pos[1]] == ".":
-                        empty_neighbors.append(pos)
-                    
-                # Če je število praznih sosedov enaka vsem možnim sosedom pozicijo preskočimo
-                if len(empty_neighbors) == len(possibilities):
-                    continue
-
-                for direction in order:
-                    if direction == 'N' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
-                        moves[(y, x)] = (y-1, x)
-                        break
-                    elif direction == 'S' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
-                        moves[(y, x)] = (y+1, x)
-                        break
-                    elif direction == 'W' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
-                        moves[(y, x)] = (y, x-1)
-                        break
-                    elif direction == 'E' and check_direction(empty_neighbors, y, x, limit_y, limit_x, direction):
-                        moves[(y, x)] = (y, x+1)
-                        break
-
-    # Vzamemo prvi vrsti red in ga dodamo kot zadnjega v vrsto
+    # Vzamemo vn prvi element v seznamu in ga damo v vrsto kot zadnjega
     order.append(order.pop(0))
 
     return moves
 
-""" TODO:
 # Funckija, ki izvede premike
-def commit_moves(positions: list, order: list):
-    moves = define_moves(positions, order)
-    #*print(moves)
+def commit_moves(cords: list, order: list) -> list:
+    # Dobimo možne premike
+    moves = define_moves(cords, order)
+
+    new_cords: list = []
+
+    # Za vsak kordinat preverimo, če je v možnih premikih
+    for cord in cords:
+        # Če ni ga dodamo v nove kordinate, saj se ne bo premaknil
+        if cord not in moves.keys():
+            new_cords.append(cord)
+            continue
+    
+    # Za vsak ključ preverimo, če ima premik(Vrednost) enak kot kateri izmed drugih možnih premikov 
     for key, value in moves.items():
         if any(value == other_value for other_key, other_value in moves.items() if other_key != key):
-            #*print("Skipping!")
-            continue
+            new_cords.append(key) # Če je sta dva elfa z enakim željenim premikom se trenutni elf ne premakne
+        else:
+            new_cords.append(value) # Če ni težav z enakimi premiki se elf premakne
 
-        positions[key[0]][key[1]] = '.'
-        positions[value[0]][value[1]] = "#"
-"""
-
+    return new_cords
+    
 # Funkcija, ki prešteje prazne pike v pravokotniku
-def calculate_empty_tiles(positions: list):
-    min_y, max_y, min_x, max_x = len(positions), 0, len(positions[0]), 0
-
-    for y in range(len(positions)):
-        for x in range(len(positions[y])):
-            if positions[y][x] == '#':
-                if y < min_y:
-                    min_y = y
-                if y > max_y:
-                    max_y = y
-                if x < min_x:
-                    min_x = x
-                if x > max_x:
-                    max_x = x  
-                    
-    empty_tiles = 0
-    for y in range(min_y, max_y + 1):
-        for x in range(min_x, max_x + 1):
-            if positions[y][x] == '.':
+def calculate_empty_tiles(cords: list) -> int:
+    
+    # Dobimo limite za pravokotnik
+    min_x = min(x[1] for x in cords)
+    max_x = max(x[1] for x in cords)
+    min_y = min(y[0] for y in cords)
+    max_y = max(y[0] for y in cords)
+    
+    #! Daljši način
+    """
+    empty_tiles=0
+    for y in range(min_y, max_y+1):
+        for x in range(min_x, max_x+1):
+            if (y, x) not in cords:
                 empty_tiles += 1
+    """
 
+    empty_tiles = (max_x - min_x + 1) * (max_y - min_y + 1) - len(cords)
+    
     return empty_tiles
 
-# Program
-for i in range(2):
-    commit_moves(positions, order)
-    #print(current_positions(positions))
-#print(calculate_empty_tiles(positions))
-#print(current_positions(positions))
+# Ustvarimo seznam kordinatov glede na pozicije elf-ov
+cords: list = []
+for y in range(len(positions)):
+    for x in range(len(positions[y])):
+        if positions[y][x] == "#":
+            cords.append((y, x))
+
+# Program part1
+for i in range(10):
+    cords = commit_moves(cords, order)
+print(calculate_empty_tiles(cords))

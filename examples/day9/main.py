@@ -36,6 +36,8 @@ def get_unique_tail_positions(tail_length) -> int:
     for direction, move_amount in paths:
         # Premikamo se za vsak premik
         for _ in range(int(move_amount)):
+
+            # Premik Head
             if direction == "U":
                 positions[0].y += 1
             elif direction == "D":

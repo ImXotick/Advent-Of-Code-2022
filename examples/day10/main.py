@@ -1,6 +1,32 @@
 # Preberemo vsako vrstico in jih skupaj shranimo v list
 input = [line.split(' ') for line in open(r'examples\day10\input.txt').read().splitlines()]
 
+# Funkcija, ki kreira nov sprite
+def create_sprint(register: int):
+    sprite: str = ""
+
+    for i in range(40):
+        if i == register - 1 or i == register or i == register + 1:
+            sprite += "#"
+        else:
+            sprite += "."
+
+    return sprite
+
+# Funkcija, ki skrbi za zapisovanje CRT-ja
+def write_CRT(sprite: str, CRT: str, saver: list):
+    crtLength: int = len(CRT)
+
+    if sprite[crtLength] == "#":
+        CRT += "#"
+    else:
+        CRT += "."
+    if len(CRT) >= 40:
+        saver.append(CRT)
+        CRT = ""
+
+    return CRT
+
 # Funkcija, ki dobi signal
 def get_signal_and_CRT():
     signalStrength: int = 0 # Moč singala
@@ -41,32 +67,6 @@ def get_signal_and_CRT():
                     sprite = create_sprint(register)
 
     return { 'signal': signalStrength, 'CRT': saver}
-
-# Funkcija, ki kreira nov sprite
-def create_sprint(register: int):
-    sprite: str = ""
-
-    for i in range(40):
-        if i == register - 1 or i == register or i == register + 1:
-            sprite += "#"
-        else:
-            sprite += "."
-
-    return sprite
-
-# Funkcija, ki skrbi za zapisovanje CRT-ja
-def write_CRT(sprite: str, CRT: str, saver: list):
-    crtLength: int = len(CRT)
-
-    if sprite[crtLength] == "#":
-        CRT += "#"
-    else:
-        CRT += "."
-    if len(CRT) >= 40:
-        saver.append(CRT)
-        CRT = ""
-
-    return CRT
 
 #Izpis
 output = get_signal_and_CRT()

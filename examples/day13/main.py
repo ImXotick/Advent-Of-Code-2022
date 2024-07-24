@@ -12,6 +12,7 @@ def compare_lists(list1, list2):
         # Če nista enaka vrnemo bool (True, False) glede na to, če je el1 manjši od el2 
         else: 
             return list1 < list2
+        
     # Preverimo, če sta oba elementa tipa list
     if isinstance(list1, list) and isinstance(list2, list):
         # Iteriramo skozi oba seznama hkrati z uporabo zip
@@ -41,6 +42,7 @@ for i, (left, right) in enumerate(pairs, 1):
 print(summed_val)
 
 # Spremenimo dvodimenzionalni seznam pairs v enodimenzionalni seznam
+
 packets = []
 for pair in pairs:
     for p in pair:

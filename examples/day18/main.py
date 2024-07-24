@@ -46,8 +46,8 @@ def calculate_non_connected_sides_part2()-> int:
     #* print(f"{min_x} | {min_y} | {min_z}")
     #* print(f"{max_x} | {max_y} | {max_z}")
 
-    outside_bounds = set() # Zunanja meja zraka
-    queue = ([(min_x, min_y, min_z)]) # Začnemo z najmanjšo možno pozicijo
+    checked = set() # Zunanja meja zraka
+    queue: list = ([(min_x, min_y, min_z)]) # Začnemo z najmanjšo možno pozicijo
 
     # Premikamo se 
     while queue:
@@ -55,20 +55,22 @@ def calculate_non_connected_sides_part2()-> int:
         x, y, z = queue.pop(0)
 
         # Preverimo, če je položaj že znan ali pa je del kock, če je preskočimo
-        if (x, y, z) in outside_bounds or (x, y, z) in cubes:
+        if (x, y, z) in checked or (x, y, z) in cubes:
             continue
+
         # Preverimo, če je trenutni položaj znotraj naših meja
         if x < min_x or x > max_x or y < min_y or y > max_y or z < min_z or z > max_z:
             continue
-        # Drugače dodamo, da je trenutni položaj zunaj meja
-        outside_bounds.add((x, y, z))
-
+        
+        # Drugače dodamo, da je trenutni položaj znotraj in je že pregledan
+        checked.add((x, y, z))
+        
         # Za vsak od šestih možnih smeri izračunamo sosednji položaj in ga dodamo v vrsto
         for direction in directions:
             neighbor = (x + direction[0], y + direction[1], z + direction[2])
             queue.append(neighbor)
-    
-    #* print(f"Vse zunanje meje: {outside_bounds}")
+
+    #* print(f"Vse meje: {checked}")
 
     # Premikamo so čez vse kocke
     for cube in cubes:
@@ -77,7 +79,7 @@ def calculate_non_connected_sides_part2()-> int:
             # Izračunamo položaj sosednje kocke tako, da dodamo trenutno smer k trenutni kocki
             neighbor = (cube[0] + direction[0], cube[1] + direction[1], cube[2] + direction[2])
             # Če sosednja kocka na položaju ne obstaja in je del zunanjega zraka (Ploskev izpostavljena zunanjem zraku) 
-            if neighbor not in cubes and neighbor in outside_bounds:
+            if neighbor not in cubes and neighbor in checked:
                 # Povečamo za 1
                 total_surface_area += 1
 

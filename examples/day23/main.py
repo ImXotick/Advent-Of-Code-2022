@@ -1,7 +1,3 @@
-import cProfile
-import pstats
-from pstats import SortKey
-
 positions = [list(line) for line in open('examples\day23\input.txt', 'r').read().strip().split('\n')]
 
 # Smeri

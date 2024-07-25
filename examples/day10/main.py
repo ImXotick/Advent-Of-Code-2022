@@ -1,5 +1,5 @@
 # Preberemo vsako vrstico in jih skupaj shranimo v list
-input = [line.split(' ') for line in open(r'examples\day10\input.txt').read().splitlines()]
+input = [tuple(line.split(' ')) for line in open(r'examples\day10\input.txt').read().splitlines()]
 
 # Funkcija, ki kreira nov sprite
 def create_sprint(register: int):
@@ -16,19 +16,18 @@ def create_sprint(register: int):
 # Funkcija, ki skrbi za zapisovanje CRT-ja
 def write_CRT(sprite: str, CRT: str, saver: list):
     crtLength: int = len(CRT)
-
+    
     if sprite[crtLength] == "#":
         CRT += "#"
     else:
         CRT += "."
-    if len(CRT) >= 40:
+    if len(CRT) == 40:
         saver.append(CRT)
         CRT = ""
-
     return CRT
 
 # Funkcija, ki dobi signal
-def get_signal_and_CRT():
+def get_signal_and_CRT(input: list):
     signalStrength: int = 0 # Moč singala
     register: int = 1 # Trenutni register
     cycle: int = 0 # Trenutni cikel
@@ -38,20 +37,24 @@ def get_signal_and_CRT():
     CRT: str =  "" # Trenutni CRT
 
     for item in input: 
-        # Preverimo, če je trenutni element(item) na mestu 0 noop     
+        
+        # Preverimo, če je trenutna operacija noop
         if item[0] == "noop":
+            cycle += 1
+            """
+            #! Ni potrebno
             # Preverimo trenutni cikel
             if cycle == 20 or cycle == prev + 40:
                 signalStrength += register * cycle
-                prev = cycle
-                #* print(f"| Cycle: {cycle} | Register: {register} | Total Strength: {signalStrength} |")
-            cycle += 1
+                prev = cycle 
+            """
             # Ob noop-u samo zapišemo CRT brez kreiranja sprita
             CRT = write_CRT(sprite, CRT, saver)
         else:
             # Izvajanje navodila
             for i in range(2):
                 cycle += 1
+
                 # Preverimo trenutni cikel
                 if cycle == 20 or cycle == prev + 40:
                     signalStrength += register * cycle
@@ -69,7 +72,7 @@ def get_signal_and_CRT():
     return { 'signal': signalStrength, 'CRT': saver}
 
 #Izpis
-output = get_signal_and_CRT()
+output = get_signal_and_CRT(input)
 
 print(f"Total signal strength: {output['signal']}")
 for item in output['CRT']:

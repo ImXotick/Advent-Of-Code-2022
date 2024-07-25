@@ -41,12 +41,12 @@ for i, (left, right) in enumerate(pairs, 1):
 # Izpišemo sum
 print(summed_val)
 
-# Spremenimo dvodimenzionalni seznam pairs v enodimenzionalni seznam
-
+#* print(pairs)
 packets = []
 for pair in pairs:
     for p in pair:
         packets.append(p)
+#* print(packets)
 
 # Sprehodimo se skozi vsak element v seznamu in preverimo, če funkcija compare_lists vrne True za ta element in seznam [[2]]
 position1 = 1  # Začnemo z 1

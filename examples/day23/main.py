@@ -63,7 +63,7 @@ def define_moves(cords: set, order: list) -> dict:
     # Vzamemo vn prvi element v seznamu in ga damo v vrsto kot zadnjega
     order.append(order.pop(0))
 
-    pass
+    #pass
     return moves
 
 # Funckija, ki izvede premike
@@ -89,7 +89,7 @@ def commit_moves(cords: set, order: list) -> set:
             new_cords.add(key) # Če je sta dva elfa z enakim željenim premikom se trenutni elf ne premakne
         else:
             new_cords.add(value) # Če ni težav z enakimi premiki se elf premakne
-    pass
+    #pass
     return new_cords
     
 # Funkcija, ki prešteje prazne pike v pravokotniku
@@ -102,17 +102,13 @@ def calculate_empty_tiles(cords: set) -> int:
     max_y = max(y[0] for y in cords)
     
     #! Daljši način
-    """
+
     empty_tiles=0
     for y in range(min_y, max_y+1):
         for x in range(min_x, max_x+1):
             if (y, x) not in cords:
                 empty_tiles += 1
-    """
-
-    empty_tiles = (max_x - min_x + 1) * (max_y - min_y + 1) - len(cords)
-    
-    pass
+    #pass
     return empty_tiles
 
 # Ustvarimo seznam kordinatov glede na pozicije elf-ov

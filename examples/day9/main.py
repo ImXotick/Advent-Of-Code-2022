@@ -54,11 +54,11 @@ def get_unique_tail_positions(tail_length) -> int:
                 # Preverimo, če je razlika med pozicijami večja od 1
                 x_diff = abs(positions[i - 1].x - positions[i].x)
                 y_diff = abs(positions[i - 1].y - positions[i].y)
-                
-                if not x_diff > 1 or y_diff > 1:
+
+                if x_diff <= 1 and y_diff <= 1:
                     continue
 
-                # Preverimo razliko med pozicijami in premikamo "tali-e" glede na razmike
+               # Preverimo razliko med pozicijami in premikamo "tali-e" glede na razmike
                 if x_diff > y_diff:
                     new_x = get_add_number(positions[i - 1].x, positions[i].x)
                     positions[i].x = positions[i - 1].x + new_x
